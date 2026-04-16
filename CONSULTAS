@@ -1,0 +1,85 @@
+-- CONSULTAS
+
+INSERT INTO CLINICA.PACIENTE VALUES
+('P-0011', 'DANIELA', 'ZEQUEA', 'F', '2010-02-22', 'BOGOTA', 'BOGOTA', '2346234682');
+
+-- 1 CONSULTA
+SELECT nombre, apellido FROM CLINICA.PACIENTE
+	WHERE RIGHT (nombre, 1) = 'A'
+	OR RIGHT (apellido, 1) = 'Z'
+	ORDER BY pk_idpaciente
+	DESC
+
+
+SELECT * FROM CLINICA.PACIENTE;
+
+
+-- 2 CONSULTA
+
+SELECT * FROM CLINICA.ESPECIALISTA;
+
+
+SELECT especialidad, COUNT(pk_idespecialista) AS TOTAL_ESPECIALISTAS FROM CLINICA.ESPECIALISTA
+GROUP BY especialidad
+
+-- 3 CONSULTA
+
+SELECT * FROM CLINICA.EXPEDIENTE_DIAGNOSTICO
+
+SELECT fk_idPaciente, edad, peso, altura FROM CLINICA.EXPEDIENTE_DIAGNOSTICO
+WHERE CAST(peso AS INTEGER) > 50 OR CAST(edad AS INTEGER) > 30;
+
+
+-- 4 EJERCICIO
+
+SELECT DISTINCT fk_idpaciente, fk_idespecialista FROM CLINICA.EXPEDIENTE_DIAGNOSTICO
+
+-- 5 EJERCICIO
+
+SELECT folio, fk_idpaciente, fk_idespecialista, fechacreacion FROM CLINICA.EXPEDIENTE_DIAGNOSTICO
+WHERE CAST (edad AS INTEGER) > 25  AND nivelPeso <>  'normal' AND fechaCreacion > '2021-10-22';
+
+-- 6 EJERCICIO
+
+SELECT * FROM CLINICA.ESPECIALISTA
+WHERE pk_idEspecialista IN ( SELECT fk_idEspecialista
+							FROM CLINICA.EXPEDIENTE_DIAGNOSTICO
+							WHERE nivelPeso IN ('SOBREPESO')
+							AND nivelPeso NOT IN ('NORMAL')
+							)
+
+-- 7 EJERCICIO
+
+SELECT * FROM CLINICA.EXPEDIENTE_DIAGNOSTICO
+
+SELECT fk_idPaciente, COUNT (fk_idPaciente) FROM CLINICA.EXPEDIENTE_DIAGNOSTICO
+GROUP BY fk_idPaciente
+ORDER BY COUNT (fk_idPaciente) DESC;
+
+
+-- 8 EJERCICIO
+
+SELECT * FROM CLINICA.EXPEDIENTE_DIAGNOSTICO
+
+SELECT fk_idPaciente, fk_idEspecialista FROM CLINICA.EXPEDIENTE_DIAGNOSTICO
+WHERE nivelPeso IN ('NORMAL', 'SOBREPESO') AND fk_idespecialista IN (SELECT pk_idEspecialista FROM CLINICA.ESPECIALISTA
+											 WHERE especialidad != 'MEDICO GENERAL')
+
+-- 9 EJERCICIO
+
+SELECT * FROM CLINICA.PACIENTE
+SELECT * FROM CLINICA.EXPEDIENTE
+
+SELECT pk_idPaciente, nombre, apellido, sexo, ciudad FROM CLINICA.PACIENTE
+WHERE ciudad IN ('MEXICO') AND fechanacimiento > '1990-01-01'
+AND pk_idPaciente IN (SELECT pk_idPaciente FROM CLINICA.EXPEDIENTE
+					  WHERE tipoalergia IN ('NA') OR padecimientocro IN ('NA')
+					  ) AND pk_idPaciente IN (SELECT pk_idPaciente FROM CLINICA.EXPEDIENTE_DIAGNOSTICO
+					  							  WHERE fk_idEspecialista IN ('ME-0001', 'ME-0002', 'ME-0003'))
+
+
+-- 10 EJERCICIO
+
+SELECT pk_idPaciente, id_cita, fk_idcita, pk_idespecialista
+FROM CLINICA.paciente
+INNER JOIN CLINICA.cita ON PACIENTE.pk_idPaciente = CLINICA.fk_idPaciente
